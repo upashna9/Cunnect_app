@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework import routers
-
+#this is our push
 router = routers.DefaultRouter()
 router.register(r'UserProfile', views.UserProfileViewSet)
 #python list of paths we can access
