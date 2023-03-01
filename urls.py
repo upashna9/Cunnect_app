@@ -1,23 +1,17 @@
-"""Cunnect_app URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
 from django.urls import path, include
+from . import views
+from rest_framework import routers
 # URLs are used to map URLs to views. In Django, you can define URL patterns that
 #  map specific URLs to specific views.
+router = routers.DefaultRouter()
+router.register(r'UserProfile', views.UserProfileViewSet)
+#python list of paths we can access
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('api.urls'))
+    path('', include(router.urls)), 
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/UserCreate/', views.RegisterViewSet.as_view(), name = "UserCreate" )
+    #path('register/', RegisterUserView.as_view(), name='register'),
+    #path('login/', obtain_auth_token, name='login'),
+    #path('logout/', LogoutView.as_view(), name='logout'),
+    #path('', views.Cunnect_header, name = 'tasks')
 ]
