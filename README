@@ -1,1 +1,10 @@
 Cunnect 
+//Important terminal commands
+django-admin startproject Cunnect_app STARTS A DJANGO PROJECT
+python manage.py startapp CREATES A DJANGO APP
+python manage.py runserver RUN A DJANGO SERVER
+python -m venv (name_of_venv) Creates a Virtual Env
+source (venv)/bin/activate Activates a Virtual Env
+
+
+
