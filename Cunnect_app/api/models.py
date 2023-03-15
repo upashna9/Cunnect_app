@@ -42,4 +42,6 @@ class Posts(models.Model):
     post = models.TextField(max_length=500, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True)
 
+#test
+test = 0
         
