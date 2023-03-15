@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
-    'knox',
+    "knox",
 ]
 
 MIDDLEWARE = [
@@ -104,10 +104,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
-        'knox.auth.TokenAuthentication',
-    ]
+        #'rest_framework.authentication.TokenAuthentication',
+        #'rest_framework.authentication.BasePermissions'
+        'knox.auth.TokenAuthentication'
+    ],
+'DEFAULT_PERMISSION_CLASSES': [
+    #'rest_framework.permissions.IsAuthenticated',
+]
 }
 
 
