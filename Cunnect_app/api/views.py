@@ -1,56 +1,62 @@
 
 from .models import UserProfile, User
-from rest_framework import viewsets
-from rest_framework import generics, permissions
+from django.contrib.auth import login
+
+from rest_framework import viewsets, status
+from rest_framework import permissions
 from rest_framework.response import Response
-#from django.contrib.auth.models import User
-from django.core.mail import send_mail
-#from .serializer import UserSerializer
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
-from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer
+from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer
 import re
 
 
 # Create your views here.
-#UserCreate is the class view set when a CUNY student wants to register an account into the app
 
-class RegisterViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-    permission_classes = [permissions.AllowAny]
-    def perform_create(self, serializer):
-        email = serializer.validated_data.get('cuny_email')
-        password = serializer.validated_data.get('password')
-        serializer.save()
-        return User
-        serializer.data()
-    
-        #return Response({'success': 'Verification code has been sent to your email.'})
-        #else:
-            #return Response({'error': 'Only email addresses with .cuny.edu domain are allowed.'})
 
-# Register API for CUNY student registering basically a request sent from the frontend for a
-#CUNY student who wants to register. this register class will handle the request and perform this response
-"""
-class RegisterViewSet(generics.GenericAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-    permission_classes = [permissions.AllowAny] #basically allow anyone to view this viewset
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-        "user": UserSerializer(user, context=self.get_serializer_context()).data,
-        "token": AuthToken.objects.create(user)[1]
-        })
-"""
 #UserProfile view set defines the view behavior 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.BasePermission]
+    permission_classes = [permissions.AllowAny]
 
-#def Cunnect_header(request):
-    #return HttpResponse('<b style="color:orange">Cunnect <b> <b style="color:blue">App </b>')
-    
+#CUNY student register viewset
+class RegisterViewset(viewsets.ModelViewSet):
+    serializer_class = RegisterSerializer
+    queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny]
+    def create(self, request):
+        serializer = RegisterSerializer(data = request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+
+            #return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)[1]
+        })
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#login viewset
+
+class LoginAPI(viewsets.ModelViewSet):
+    serializer_class = LoginSerializer
+    queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny]
+    def create(self, request):
+        serializer = LoginSerializer(data = request.data)
+        serializer.is_valid(raise_exception= True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super(LoginAPI, self).post(request, format=None)
+        """
+        serializer = LoginSerializer(data = request.data)
+        serializer.is_valid(raise_exception= True)
+        user = serializer.validated_data
+        return Response({"user": UserSerializer(user).data,
+                          "userprofile": UserProfileSerializer(UserProfile.objects.get(user = user)).data,
+                        })
+        """
