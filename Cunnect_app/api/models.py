@@ -32,4 +32,12 @@ class UserProfile(models.Model):
 
     def __str__(self): #self represents the userprofile model
         return self.user.first_name 
+   
+#TODO
+class Posts(models.Model):
+    #write the fields for column names
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    post = models.TextField(max_length=500, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True)
 
+        
