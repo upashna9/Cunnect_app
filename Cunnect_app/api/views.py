@@ -1,5 +1,5 @@
 
-from .models import UserProfile, User
+from .models import UserProfile, User, Posts
 from django.contrib.auth import login
 
 from rest_framework import viewsets, status
@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
-from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer
+from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer, PostSerializer
 import re
 
 
@@ -60,3 +60,9 @@ class LoginAPI(viewsets.ModelViewSet):
                           "userprofile": UserProfileSerializer(UserProfile.objects.get(user = user)).data,
                         })
         """
+
+#Posts views
+class Posts(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    queryset = Posts.objects.all()
+    permission_classes = [permissions.AllowAny]

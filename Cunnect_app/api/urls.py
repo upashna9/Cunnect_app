@@ -6,7 +6,8 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'UserProfile', views.UserProfileViewSet)
 router.register(r'Register', views.RegisterViewset)
-router.register(r'Login', views.LoginAPI, basename='login')
+router.register(r'Login,', views.LoginAPI, basename='login')
+router.register(r'Posts', views.Posts)
 #router.register(r'RegisterView', views.RegisterView)
 
 #python list of paths we can access

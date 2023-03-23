@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser
+import uuid
+from datetime import datetime
 # Create your models here.
 
 CUNY_choices = (('Baruch College','Baruch College'), ('Borough of Manhattan Community College','Borough of Manhattan Community College'), 
@@ -38,10 +40,16 @@ class UserProfile(models.Model):
 #TODO
 class Posts(models.Model):
     #write the fields for column names
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    post = models.TextField(max_length=500, blank=True)
-    date_posted = models.DateTimeField(auto_now_add=True)
+    #user = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='post_image', blank=True, null=True )
+    caption = models.TextField(max_length=500)
+    date_created = models.DateTimeField(default=datetime.now)
+    
+    def __str__(self):
+        return self.caption
+    
 
-#test
-test = 0
+
+
         
