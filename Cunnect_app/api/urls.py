@@ -13,9 +13,4 @@ router.register(r'Login', views.LoginAPI, basename='login')
 urlpatterns = [
     path('', include(router.urls)), 
     path('api-auth/', include('rest_framework.urls')),
-    #path('api/Register/', views.RegisterViewSet.as_view(), name = "Register" )
-    #path('register/', RegisterUserView.as_view(), name='register'),
-    #path('login/', obtain_auth_token, name='login'),
-    #path('logout/', LogoutView.as_view(), name='logout'),
-    #path('', views.Cunnect_header, name = 'tasks')
 ]
