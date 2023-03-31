@@ -1,15 +1,16 @@
 
-from .models import UserProfile, User
+from .models import UserProfile, User, Posts
 from django.contrib.auth import login
-
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
 from knox.auth import TokenAuthentication
-from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer
+from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer, PostSerializer
 import re
 
 
@@ -58,3 +59,19 @@ class LoginAPI(viewsets.ModelViewSet):
             'user_last_name' : user.last_name
             })
 
+#Logout viewset
+#the frontend user sends a get request with the authtoken they used to login, the get method handles this requests by
+#deleting the token the user uses to login. Since this token is deleted in the database the user is no longer logged in
+class LogoutViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = LoginSerializer
+    queryset = User.objects.all()
+    def logout(self, request):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+#Posts views
+class Posts(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    queryset = Posts.objects.all()
+    permission_classes = [permissions.AllowAny]
