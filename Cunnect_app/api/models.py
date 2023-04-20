@@ -14,6 +14,7 @@ CUNY_choices = (('Baruch College','Baruch College'), ('Borough of Manhattan Comm
                 ('Lehman College','Lehman College'), ('Macaulay Honors College','Macaulay Honors College'), ('Medgar Evers College','Medgar Evers College'),
                 ('New York City College of Technology','New York City College of Technology'), ('Queens College','Queens College'), ('Queensborough Community College','Queensborough Community College'),
                 ('The City College of New York','The City College of New York'), ('York College','York College'))
+
 class User(User):
     cuny_email = models.EmailField(unique = True)
     #first_name = models.CharField(max_length =100, blank = False)
@@ -25,6 +26,7 @@ class User(User):
     date_user_joined = models.DateTimeField(auto_now_add= True)
     def __str__(self):
         return self.username
+    
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
@@ -46,9 +48,28 @@ class Posts(models.Model):
     caption = models.TextField(max_length=500)
     date_created = models.DateTimeField(default=datetime.now)
     
-    def __str__(self):
+    def __str__(self): #self refers to the instance of the specific post model
         return self.caption
     
+    def num_likes(self):
+        return self.likes_set.count() #return the number of likes from the instance of the post serializer class
+    
+    def users_who_liked(self):
+        return [Likes.user for Likes in self.likes_set.all()] #return the list of users who liked the post
+    
+    def comments(self):
+        return self.comment_set.all() #return the comments of the post serializer class
+
+class Likes(models.Model):
+    post = models.ForeignKey(Posts, on_delete= models.CASCADE) #the post that is being liked
+    user = models.ForeignKey(User, on_delete= models.CASCADE) #the user that liked the post
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Posts, on_delete= models.CASCADE) #the post that is being commented
+    user = models.ForeignKey(User, on_delete = models.CASCADE) #the user making the comment
+    text = models.CharField(max_length = 100) #the comment made on the post
+    created_at = models.DateTimeField(auto_now_add = True)
 
 
 

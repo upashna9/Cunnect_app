@@ -1,4 +1,4 @@
-from .models import User, UserProfile, Posts
+from .models import User, UserProfile, Posts, Comment, Likes
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = User
-        fields = ['cuny_email', 'first_name', 'last_name','major', 'CUNY', 'graduation_year', 'birth_date']
+        fields = ['cuny_email', 'first_name', 'last_name', 'major', 'CUNY', 'graduation_year', 'birth_date']
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(style = {'input_type':'password'}, write_only = True)
@@ -84,9 +84,47 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['user', 'bio', 'CUNY','major','birth_date', 'profile_pic', 'date_user_joined']
 
 class PostSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField()
+    num_likes = serializers.SerializerMethodField()
+    users_who_liked = serializers.SerializerMethodField()
     class Meta:
         model = Posts
-        fields = ['user', 'image', 'caption', 'date_created']
+        fields = ['user', 'image', 'caption', 'date_created', 'num_likes', 'comments', 'users_who_liked']
+    #self represents the specific instance of the postserializer class thats being used to serialize a post object
+    #obj represents the specific instance of the post model that is being serialized
+    #the function num_likes returns the number of likes of a specific post instance by calling the num_likes function in the post model
+    def get_num_likes(self, obj):
+        return obj.num_likes()
+    
+    #self represents the specific instance of the post serializer class
+    #obj represents the specific instance of the post model that is being serialized
+    #the function get_users_who_liked returns a list of the users first_name and last_name who liked the post
+    def get_users_who_liked(self, obj):
+        return [User.first_name for User in obj.users_who_liked()]
+    
+    #self represents the specific instance of the post serializer class
+    #obj represents the specific instance of the post model that is being serialized
+    #the function defines the_comments variable by calling the comments function that returns all the comments of the specific post model
+    #we return the serialized data of the list of comments by calling the Commentserializer on the list of comments and returning them
+    def get_comments(self, obj):
+        the_comments = obj.comments()
+        return CommentSerializer(the_comments, many = True).data
 
 """So, overall, this serializer will be used to serialize instances of the UserProfile model, and the serialized representation will 
 include the user, bio, CUNY, major, birth_date, profile_pic, and date_user_joined fields of the model."""
+
+"""The class CommentSerializer(serializers.ModelSerializer): line creates a new serializer called CommentSerializer that inherits from 
+serializers.ModelSerializer. The next four lines define the fields that should be included in the serialized representation of a Comment
+ object. In this case, were including the id, user, post, and content fields."""
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['post', 'user', 'text', 'created_at']
+
+"""This block of code defines the serializer for the Like model. The class LikeSerializer(serializers.ModelSerializer): line creates a new 
+serializer called LikeSerializer that inherits from serializers.ModelSerializer. The next three lines define the fields that should be included in 
+the serialized representation of a Like object. In this case, were including the id, user, and post fields."""
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Likes
+        fields = ['post', 'user']

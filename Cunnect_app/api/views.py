@@ -1,5 +1,5 @@
 
-from .models import UserProfile, User, Posts
+from .models import UserProfile, User, Posts, Comment, Likes
 from django.contrib.auth import login
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -10,7 +10,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
 from knox.auth import TokenAuthentication
-from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer, PostSerializer
+from .serializer import UserSerializer, UserProfileSerializer, RegisterSerializer, LoginSerializer, PostSerializer, CommentSerializer, LikeSerializer
 import re
 
 
@@ -74,4 +74,14 @@ class LogoutViewSet(viewsets.ModelViewSet):
 class Posts(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Posts.objects.all()
-    permission_classes = [permissions.AllowAny]
+    
+
+#Comment viewset
+class Comment(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+
+#Likes viewset
+class Likes(viewsets.ModelViewSet):
+    serializer_class = LikeSerializer
+    queryset = Likes.objects.all()
